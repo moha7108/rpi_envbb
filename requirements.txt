@@ -1,5 +1,10 @@
 logzero==1.7.0
+numpy==1.23.4
+pandas==1.5.1
+python-dateutil==2.8.2
+pytz==2022.6
 RPI-control-center==0.2.0
 RPi.GPIO==0.7.1
+six==1.16.0
 smbus==1.1.post2
 spidev==3.6
