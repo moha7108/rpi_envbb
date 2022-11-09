@@ -26,13 +26,18 @@ if __name__ == '__main__':
 
 
     env_sensor.start()
-    time.sleep(5)
-
+    time.sleep(10)
+    while True:
+        # print(env_sensor.sensor_readings)
+        push_to_csv(csv_file, env_sensor.sensor_readings)
+        time.sleep(1)
 
     try:
         while True:
-            print(env_sensor.sensor_readings)
-            # push_to_csv(csv_file, env_sensor.sensor_readings)
+            # print(env_sensor.sensor_readings)
+            push_to_csv(csv_file, env_sensor.sensor_readings)
             time.sleep(1)
+    env_sensor.stop()
+    
     except:
         env_sensor.stop()
