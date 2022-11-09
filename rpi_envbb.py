@@ -31,7 +31,8 @@ if __name__ == '__main__':
 
     try:
         while True:
-            push_to_csv(csv_file, env_sensor.sensor_readings)
+            print(env_sensor.sensor_readings)
+            # push_to_csv(csv_file, env_sensor.sensor_readings)
             time.sleep(1)
     except:
         env_sensor.stop()
