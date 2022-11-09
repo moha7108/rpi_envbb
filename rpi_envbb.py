@@ -1,5 +1,6 @@
-import time, os
+import time, os, csv
 from rpi_sensor_monitors import monitors
+
 
 def push_to_csv(csv_file, data):
 	""" """
