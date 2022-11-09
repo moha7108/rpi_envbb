@@ -5,7 +5,7 @@ from rpi_sensor_monitors import monitors
 
 if __name__ == '__main__':
 
-    env_sensor = monitors.BME608()
+    env_sensor = monitors.BME680()
 
     env_sensor.start()
 
