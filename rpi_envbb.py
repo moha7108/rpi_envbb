@@ -32,27 +32,27 @@ class csv_handler():
 		'''
 
 		'''
-		 data_file_paths = [self.base_dir+file for file in os.listdir(self.base_dir) if os.path.isfile(self.base_dir+file) and self.filename in file and '.csv' in file]
+		data_file_paths = [self.base_dir+file for file in os.listdir(self.base_dir) if os.path.isfile(self.base_dir+file) and self.filename in file and '.csv' in file]
 
-		 # if not data_file_paths:
-		 #     ts = datetime.datetime.now().strftime(str_format)
-		 #     data_file_paths = [f'{self.base_dir}{ts}_{self.filename}.csv']
+		# if not data_file_paths:
+		#     ts = datetime.datetime.now().strftime(str_format)
+		#     data_file_paths = [f'{self.base_dir}{ts}_{self.filename}.csv']
 
-		 data_files = []
-		 total_size = 0
+		data_files = []
+		total_size = 0
 
-		 for file in data_file_paths:
-			 file_stats = os.stat(file)
+		for file in data_file_paths:
+			file_stats = os.stat(file)
 
-			 data_file = {  'file': file,
+			data_file = {   'file': file,
 							'size': file_stats.st_size,
 							'last_modified': file_stats.st_mtime,
 							'status': 'active' if file_stats.st_size <= self.max_file_size else 'full'
 						  }
 
-			 total_size += data_file['size']
+			total_size += data_file['size']
 
-			 data_files.append(data_file)
+			data_files.append(data_file)
 
 		self.data_files = data_files
 		self.total_size = total_size
