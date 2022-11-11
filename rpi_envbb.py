@@ -2,110 +2,127 @@ import time, os, csv, datetime
 from rpi_sensor_monitors import monitors
 from rpi_control_center import rpi_usb
 
+str_format = '%Y%m%d%H%M%S'
+
 class csv_handler():
-    def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling size = 5000000):
+	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling size = 5000000):
 
 		if not os.path.exists(base_dir): os.makedirs(base_dir)
 
-        self.base_dir = base_dir
-        self.filename = filename
-        self.base_filesys = base_dir + self.filename
-        self.max_file_size = max_file_size
-        self.max_handling_size = max_handling_size
+		self.base_dir = base_dir
+		self.filename = filename
+		self.base_filesys = base_dir + self.filename
+		self.max_file_size = max_file_size
+		self.max_handling_size = max_handling_size
 
-        self.data_files = self.check_files()
-
-
-        self.writing_to = None
-
-        self.total_size = None
+		self.data_files = self.check_files()
 
 
+		self.writing_to = None
 
-    def __call__(self, data):
-        ''''''
-
-    def check_files(self):
-        '''
-        '''
-
-         data_file_paths = [self.base_dir+file for file in os.listdir(self.base_dir) if os.path.isfile(self.base_dir+file) and self.filename in file and '.csv' in file]
-         data_files = []
-
-         for file in data_file_paths:
-
-             file_stats = os.stat(file)
-
-             data_file = {  'file': file,
-                            'size': file_stats.st_size,
-                            'last_modified': file_stats.st_mtime,
-                            'status': 'active' if file_stats.st_size <= self.max_file_size else 'full'
-                          }
-
-            data_files.append(data_file)
-
-        self.data_files = data_files
-        self.total_size = sum([file['size'] for file in self.data_files])
-
-        if self.total_size > self.max_handling_size: self.purge_data_files()
-
-    def file_pointer(self):
+		self.total_size = None
 
 
 
-        self.writing_to = max([file['file'].split('_')[0] for file in self.data_files if file['status'] == 'active'])
+	def __call__(self, data):
+		'''
+		'''
+
+	def check_files(self):
+		'''
+
+		'''
+		 data_file_paths = [self.base_dir+file for file in os.listdir(self.base_dir) if os.path.isfile(self.base_dir+file) and self.filename in file and '.csv' in file]
+
+		 # if not data_file_paths:
+		 #     ts = datetime.datetime.now().strftime(str_format)
+		 #     data_file_paths = [f'{self.base_dir}{ts}_{self.filename}.csv']
+
+		 data_files = []
+		 total_size = 0
+
+		 for file in data_file_paths:
+			 file_stats = os.stat(file)
+
+			 data_file = {  'file': file,
+							'size': file_stats.st_size,
+							'last_modified': file_stats.st_mtime,
+							'status': 'active' if file_stats.st_size <= self.max_file_size else 'full'
+						  }
+
+			 total_size += data_file['size']
+
+			 data_files.append(data_file)
+
+		self.data_files = data_files
+		self.total_size = total_size
+
+		if self.total_size > self.max_handling_size: self.purge_data_files()
+
+		active_files = [file for file in data_files if file['status'] == 'active']
+
+		if active_files:
+			self.writing_to = max([file['file'].split('_')[0] for file in self.data_files if file['status'] == 'active'])
+		elif not active_files:
+			ts = datetime.datetime.now().strftime(str_format)
+			self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
+
+	def file_pointer(self):
+		'''
+		'''
+
+		self.writing_to = max([file['file'].split('_')[0] for file in self.data_files if file['status'] == 'active'])
 
 
+	def purge_data_files(self, all_files = False):
+		''''''
 
-    def purge_data_files(self, all_files = False):
-        ''''''
+		if all_files:
+			for  data_file in self.data_files:
+				os.remove(data_file['file'])
+				self.data_files.remove(data_file)
 
-        if all_files:
-            for  data_file in self.data_files:
-                os.remove(data_file['file'])
-                self.data_files.remove(data_file)
+		else:
+			for data_file in self.data_files:
+				if data_file['status'] =='full':
+					os.remove(data_file['file'])
+					self.data_files.remove(data_file)
+				else:
+					pass
 
-        else:
-            for data_file in self.data_files:
-                if data_file['status'] =='full':
-                    os.remove(data_file['file'])
-                    self.data_files.remove(data_file)
-                else:
-                    pass
+		self.total_size = sum([file['size'] for file in self.data_files])
 
-        self.total_size = sum([file['size'] for file in self.data_files])
+	def push_to_csv(self, csv_file, data):
+		""" """
+		fieldnames = [label for label, paremeter in data.items()]
 
-    def push_to_csv(self, csv_file, data):
-    	""" """
-    	fieldnames = [label for label, paremeter in data.items()]
-
-    	if not os.path.isfile(csv_file):
-    		with open(csv_file, 'w', newline='') as file:
-    			writer = csv.DictWriter(file, fieldnames =fieldnames)
-    			writer.writeheader()
-    			writer.writerow(data)
-    	else:
-    		with open(csv_file, 'a', newline='') as file:
-    			writer = csv.DictWriter(file, fieldnames =fieldnames)
-    			writer.writerow(data)
+		if not os.path.isfile(csv_file):
+			with open(csv_file, 'w', newline='') as file:
+				writer = csv.DictWriter(file, fieldnames =fieldnames)
+				writer.writeheader()
+				writer.writerow(data)
+		else:
+			with open(csv_file, 'a', newline='') as file:
+				writer = csv.DictWriter(file, fieldnames =fieldnames)
+				writer.writerow(data)
 
 
 if __name__ == '__main__':
 
-    env_sensor = monitors.BME680()
-    log_dir = env_sensor.log_file.rsplit('/',1)
-    log_dir.pop()
-    csv_file = f'{log_dir[0]}/envbb_data.csv'
+	env_sensor = monitors.BME680()
+	log_dir = env_sensor.log_file.rsplit('/',1)
+	log_dir.pop()
+	csv_file = f'{log_dir[0]}/envbb_data.csv'
 
 
-    env_sensor.start()
-    time.sleep(5)
+	env_sensor.start()
+	time.sleep(5)
 
-    try:
-        while True:
-            # print(env_sensor.sensor_readings)
-            push_to_csv(csv_file, env_sensor.sensor_readings)
-            time.sleep(1)
+	try:
+		while True:
+			# print(env_sensor.sensor_readings)
+			push_to_csv(csv_file, env_sensor.sensor_readings)
+			time.sleep(1)
 
-    except:
-        env_sensor.stop()
+	except:
+		env_sensor.stop()
