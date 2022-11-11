@@ -13,12 +13,10 @@ class csv_handler():
         self.max_file_size = max_file_size
         self.max_handling_size = max_handling_size
 
-        self.active_files = None
-        self.full_files =
         self.data_files = self.check_files()
 
 
-        self.writing_to =
+        self.writing_to = None
 
         self.total_size = None
 
@@ -33,10 +31,6 @@ class csv_handler():
 
          data_file_paths = [self.base_dir+file for file in os.listdir(self.base_dir) if os.path.isfile(self.base_dir+file) and self.filename in file and '.csv' in file]
          data_files = []
-         active_files = []
-         full_files = []
-         total_size = 0
-
 
          for file in data_file_paths:
 
@@ -48,40 +42,38 @@ class csv_handler():
                             'status': 'active' if file_stats.st_size <= self.max_file_size else 'full'
                           }
 
-            if data_file['status'] == 'active': active_files.append(data_file)
-            elif data_file['status'] == 'full': full_files.append(data_file)
-            total_size += data_file['size']
             data_files.append(data_file)
 
-        if total_size > self.max_handling_size:
-            self.purge_data_files()
+        self.data_files = data_files
+        self.total_size = sum([file['size'] for file in self.data_files])
+
+        if self.total_size > self.max_handling_size: self.purge_data_files()
+
+    def file_pointer(self):
 
 
 
-
-
-
-
-        return data_files
-
-
-         datetime.datetime.now().strftime('%Y%m%d%H%M%S_')
-
-
+        self.writing_to = max([file['file'].split('_')[0] for file in self.data_files if file['status'] == 'active'])
 
 
 
     def purge_data_files(self, all_files = False):
+        ''''''
 
         if all_files:
             for  data_file in self.data_files:
                 os.remove(data_file['file'])
                 self.data_files.remove(data_file)
 
-        elif not all_files:
-            for data_file in self.full_files:
-                os.remove(data_file['file'])
-                self.full_files.remove(data_file)
+        else:
+            for data_file in self.data_files:
+                if data_file['status'] =='full':
+                    os.remove(data_file['file'])
+                    self.data_files.remove(data_file)
+                else:
+                    pass
+
+        self.total_size = sum([file['size'] for file in self.data_files])
 
     def push_to_csv(self, csv_file, data):
     	""" """
