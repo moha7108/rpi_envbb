@@ -28,7 +28,14 @@ class csv_handler():
 		'''
 
 		self.check_files()
+
+		if not self.writing_to:
+			ts = datetime.datetime.now().strftime(str_format)
+			self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
+
 		self.push_to_csv(self.writing_to, data)
+
+		self.check_files()
 
 
 	def check_files(self):
@@ -63,14 +70,15 @@ class csv_handler():
 
 		active_files = [file for file in data_files if file['status'] == 'active']
 
-		self.writing_to = max([int(file['file'].split('_')[0]) for file in self.data_files if file['status'] == 'active'])
 
-		# if active_files:
-		# 	self.writing_to = max([int(file['file'].split('_')[0]) for file in self.data_files if file['status'] == 'active'])
-		# elif not active_files:
-		# 	ts = datetime.datetime.now().strftime(str_format)
-		# 	self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
-		# 	self.data_files.append(self.writing_to)
+		if active_files:
+			self.writing_to = max([int(file['file'].split('_')[0]) for file in self.data_files if file['status'] == 'active'])
+		elif not active_files:
+			self.writing_to = None
+
+			# ts = datetime.datetime.now().strftime(str_format)
+			# self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
+			# self.data_files.append(self.writing_to)
 
 
 	def purge_data_files(self, all_files = False):
