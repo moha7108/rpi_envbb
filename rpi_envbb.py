@@ -5,7 +5,7 @@ from rpi_control_center import rpi_usb
 str_format = '%Y%m%d%H%M%S'
 
 class csv_handler():
-	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling size = 5000000):
+	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling_size = 5000000):
 
 		if not os.path.exists(base_dir): os.makedirs(base_dir)
 
