@@ -125,8 +125,10 @@ if __name__ == '__main__':
 	print(test_csv.writing_to)
 	print(test_csv.total_size)
 
+	test_csv(test_data)
 
-	lol_csv = csv_handler()
+
+	# lol_csv = csv_handler()
 
 	# env_sensor = monitors.BME680()
 	# log_dir = env_sensor.log_file.rsplit('/',1)
