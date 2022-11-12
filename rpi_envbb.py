@@ -11,16 +11,15 @@ class csv_handler():
 
 		self.base_dir = base_dir
 		self.filename = filename
-		self.base_filesys = base_dir + self.filename
-		self.max_file_size = max_file_size
-		self.max_handling_size = max_handling_size
-
-		self.data_files = self.check_files()
+		self.max_file_size = max_file_size *1000
+		self.max_handling_size = max_handling_size *1000
 
 
+		self.data_files = dict()
 		self.writing_to = None
-
 		self.total_size = None
+
+        self.check_files()
 
 
 
@@ -28,9 +27,12 @@ class csv_handler():
 		'''
 		'''
 
+        self.check_files()
+        self.push_to_csv(self.writing_to, data)
+
+
 	def check_files(self):
 		'''
-
 		'''
 		data_file_paths = [self.base_dir+file for file in os.listdir(self.base_dir) if os.path.isfile(self.base_dir+file) and self.filename in file and '.csv' in file]
 
@@ -66,6 +68,7 @@ class csv_handler():
 		elif not active_files:
 			ts = datetime.datetime.now().strftime(str_format)
 			self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
+            self.data_files.append(self.writing_to)
 
 
 	def purge_data_files(self, all_files = False):
@@ -103,20 +106,27 @@ class csv_handler():
 
 if __name__ == '__main__':
 
-	env_sensor = monitors.BME680()
-	log_dir = env_sensor.log_file.rsplit('/',1)
-	log_dir.pop()
-	csv_file = f'{log_dir[0]}/envbb_data.csv'
 
+    test_data = {'hello': 13, 'poop':'34013'}
 
-	env_sensor.start()
-	time.sleep(5)
+    test_csv = csv_handler()
 
-	try:
-		while True:
-			# print(env_sensor.sensor_readings)
-			push_to_csv(csv_file, env_sensor.sensor_readings)
-			time.sleep(1)
+    lol_csv = csv_handler()
 
-	except:
-		env_sensor.stop()
+	# env_sensor = monitors.BME680()
+	# log_dir = env_sensor.log_file.rsplit('/',1)
+	# log_dir.pop()
+	# csv_file = f'{log_dir[0]}/envbb_data.csv'
+    #
+    #
+	# env_sensor.start()
+	# time.sleep(5)
+    #
+	# try:
+	# 	while True:
+	# 		# print(env_sensor.sensor_readings)
+	# 		push_to_csv(csv_file, env_sensor.sensor_readings)
+	# 		time.sleep(1)
+    #
+	# except:
+	# 	env_sensor.stop()
