@@ -19,7 +19,7 @@ class csv_handler():
 		self.writing_to = None
 		self.total_size = None
 
-        self.check_files()
+		self.check_files()
 
 
 
@@ -27,8 +27,8 @@ class csv_handler():
 		'''
 		'''
 
-        self.check_files()
-        self.push_to_csv(self.writing_to, data)
+		self.check_files()
+		self.push_to_csv(self.writing_to, data)
 
 
 	def check_files(self):
@@ -68,7 +68,7 @@ class csv_handler():
 		elif not active_files:
 			ts = datetime.datetime.now().strftime(str_format)
 			self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
-            self.data_files.append(self.writing_to)
+			self.data_files.append(self.writing_to)
 
 
 	def purge_data_files(self, all_files = False):
@@ -107,31 +107,31 @@ class csv_handler():
 if __name__ == '__main__':
 
 
-    test_data = {'hello': 13, 'poop':'34013'}
+	test_data = {'hello': 13, 'poop':'34013'}
 
-    test_csv = csv_handler(filename='test_data')
+	test_csv = csv_handler(filename='test_data')
 
-    print(test_csv.data_files)
-    print(test_csv.writing_to)
-    print(test_csv.total_size)
+	print(test_csv.data_files)
+	print(test_csv.writing_to)
+	print(test_csv.total_size)
 
 
-    lol_csv = csv_handler()
+	lol_csv = csv_handler()
 
 	# env_sensor = monitors.BME680()
 	# log_dir = env_sensor.log_file.rsplit('/',1)
 	# log_dir.pop()
 	# csv_file = f'{log_dir[0]}/envbb_data.csv'
-    #
-    #
+	#
+	#
 	# env_sensor.start()
 	# time.sleep(5)
-    #
+	#
 	# try:
 	# 	while True:
 	# 		# print(env_sensor.sensor_readings)
 	# 		push_to_csv(csv_file, env_sensor.sensor_readings)
 	# 		time.sleep(1)
-    #
+	#
 	# except:
 	# 	env_sensor.stop()
