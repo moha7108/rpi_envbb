@@ -109,7 +109,12 @@ if __name__ == '__main__':
 
     test_data = {'hello': 13, 'poop':'34013'}
 
-    test_csv = csv_handler()
+    test_csv = csv_handler(filename='test_data')
+
+    print(test_csv.data_files)
+    print(test_csv.writing_to)
+    print(test_csv.total_size)
+
 
     lol_csv = csv_handler()
 
