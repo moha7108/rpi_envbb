@@ -72,7 +72,7 @@ class csv_handler():
 
 
 		if active_files:
-			self.writing_to = max([int(file['file'].split('_')[0]) for file in self.data_files if file['status'] == 'active'])
+			self.writing_to = max([int(file['file'].split('_')[0].split('/')[-1]) for file in self.data_files if file['status'] == 'active'])
 		elif not active_files:
 			self.writing_to = None
 
