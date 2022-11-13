@@ -63,10 +63,6 @@ class csv_handler():
 		self.filename = filename
 		self.max_file_size = max_file_size *1000
 		self.max_handling_size = max_handling_size *1000
-		# self.data_files = dict()
-		# self.writing_to = None
-		# self.total_size = None
-
 		self.data_files, self.writing_to, self.total_size = self.check_files()
 
 	def __call__(self, data):
@@ -81,7 +77,6 @@ class csv_handler():
 		if not self.writing_to:
 			ts = datetime.datetime.now().strftime(str_format)
 			self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
-
 		self.push_to_csv(self.writing_to, data)
 		self.check_files()
 
