@@ -3,6 +3,7 @@ from rpi_sensor_monitors import monitors
 from rpi_control_center import rpi_usb
 
 str_format = '%Y%m%d%H%M%S'
+readable_format = '%Y/%m/%d %H:%M:%S'
 
 class csv_handler():
 	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling_size = 5000000):
@@ -14,29 +15,23 @@ class csv_handler():
 		self.max_file_size = max_file_size *1000
 		self.max_handling_size = max_handling_size *1000
 
-
 		self.data_files = dict()
 		self.writing_to = None
 		self.total_size = None
 
 		self.check_files()
 
-
-
 	def __call__(self, data):
 		'''
 		'''
 
 		self.check_files()
-
 		if not self.writing_to:
 			ts = datetime.datetime.now().strftime(str_format)
 			self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
 
 		self.push_to_csv(self.writing_to, data)
-
 		self.check_files()
-
 
 	def check_files(self):
 		'''
@@ -51,27 +46,22 @@ class csv_handler():
 
 			data_file = {   'file': file,
 							'size': file_stats.st_size,
-							'last_modified': file_stats.st_mtime,
+							'last_modified': datetime.fromtimestamp(file_stats.st_mtime).strftime(readable_format),
 							'status': 'active' if file_stats.st_size <= self.max_file_size else 'full'
 						  }
 
 			total_size += data_file['size']
-
 			data_files.append(data_file)
 
 		self.data_files = data_files
 		self.total_size = total_size
 
 		if self.total_size > self.max_handling_size: self.purge_data_files()
-
 		active_files = [file for file in data_files if file['status'] == 'active']
 
 		if active_files:
-
 			ts = max([datetime.datetime.strptime(file['file'].split('_')[0].split('/')[-1], str_format) for file in active_files]).strftime(str_format)
-
 			self.writing_to = self.find_ts_path(ts, active_files)
-
 		elif not active_files:
 			self.writing_to = None
 
@@ -82,7 +72,6 @@ class csv_handler():
 			for  data_file in self.data_files:
 				os.remove(data_file['file'])
 				self.data_files.remove(data_file)
-
 		else:
 			for data_file in self.data_files:
 				if data_file['status'] =='full':
