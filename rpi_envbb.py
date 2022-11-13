@@ -6,25 +6,76 @@ str_format = '%Y%m%d%H%M%S'
 readable_format = '%Y/%m/%d %H:%M:%S'
 
 class csv_handler():
-	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling_size = 5000000):
+	"""
+	A class that maintains a csv file management system. This class is particularly
+	useful for  short-term logging data onto csv files continuously, while maintaining storage capacity.
 
+	Attributes
+    ----------
+	base_dir : str
+		Path to the directory used for storing CSV file.
+	filename : str
+		Base file name used to identify CSV files used in the management system.
+	max_file_size : int
+		Set maximum file size in bytes, in which a CSV file will be maintained.
+	max_handling_size : int
+		Set maximum size in bytes, of all csv files in management system will be maintained before purging full csv files.
+	data_files : list(dict())
+		List of dictionaries with attributes of files maintained by the handler.
+	writing_to : str
+		Path to the file being written to.
+	total_size : int
+		Total size, in bytes, of all csv files in maintained in the management system.
+
+	Methods
+	-------
+	__init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling_size = 5000000):
+		Initialize class object parameters.
+	__call__(self, data):
+		Transfer data to csv_file pointed at the writing_to attribute when class object is called.
+	check_files(self):
+		Checks and updates the parameters of the file management system.
+	purge_data_files(self, all_files = False):
+		Purges data files of the file manegement sysetem.
+	find_ts_path(self, ts, data_files):
+		Returns the filepath of a given timestamp if it exists.
+	push_to_csv(self, csv_file, data):
+		Push data in dictionary form to csv file.
+	"""
+	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling_size = 5000000):
+		'''
+		constructs all necessary attributes for the csv_handler object.
+			Parameters
+			----------
+				base_dir : str
+					Path to the directory used for storing CSV file.
+				filename : str
+					Base file name used to identify CSV files used in the management system.
+				max_file_size : int
+					Set maximum file size in kb, in which a CSV file will be maintained.
+				max_handling_size : int
+					Set maximum size in kb, of all csv files in management system will be maintained before purging full csv files.
+		'''
 		if not os.path.exists(base_dir): os.makedirs(base_dir)
 
 		self.base_dir = base_dir
 		self.filename = filename
 		self.max_file_size = max_file_size *1000
 		self.max_handling_size = max_handling_size *1000
+		# self.data_files = dict()
+		# self.writing_to = None
+		# self.total_size = None
 
-		self.data_files = dict()
-		self.writing_to = None
-		self.total_size = None
-
-		self.check_files()
+		self.data_files, self.writing_to, self.total_size = self.check_files()
 
 	def __call__(self, data):
 		'''
+		Transfer data to csv_file pointed at the writing_to attribute when class object is called.
+			Parameters
+			----------
+				data : <class dict>
+					Dictionary with key and values to be written to the csv file pointed by the written_to attribute
 		'''
-
 		self.check_files()
 		if not self.writing_to:
 			ts = datetime.datetime.now().strftime(str_format)
@@ -35,6 +86,11 @@ class csv_handler():
 
 	def check_files(self):
 		'''
+		Checks and updates the parameters of the file management system.
+			Returns
+			-------
+			(self.data_files, self.writing_to, self.total_size) : <class tuple>
+				data_files, writing_to, total_size attributes of csv_handler object
 		'''
 		data_file_paths = [self.base_dir+file for file in os.listdir(self.base_dir) if os.path.isfile(self.base_dir+file) and self.filename in file and '.csv' in file]
 
@@ -65,9 +121,16 @@ class csv_handler():
 		elif not active_files:
 			self.writing_to = None
 
-	def purge_data_files(self, all_files = False):
-		''''''
+		return self.data_files, self.writing_to, self.total_size
 
+	def purge_data_files(self, all_files = False):
+		'''
+		Purges data files of the file manegement sysetem.
+			Parameters
+			----------
+				all_files : bool
+					Determines purging all files(True) or full files(False) only
+		'''
 		if all_files:
 			for  data_file in self.data_files:
 				os.remove(data_file['file'])
@@ -83,15 +146,38 @@ class csv_handler():
 		self.total_size = sum([file['size'] for file in self.data_files])
 
 	def find_ts_path(self, ts, data_files):
-
+		'''
+		Returns the filepath of a given timestamp if it exists.
+			Parameters
+			----------
+				ts : str
+					timestamp in string format
+				data_files : <class dict>
+					dictionary of file attributes, must have 'file' key with path to file to be checked
+			Returns
+			-------
+				file_path : str
+					If ts is found in the file path, file path string
+				None:
+					If ts is not in found in file path, None
+		'''
 		for file in data_files:
 			if ts in file['file']:
-				return file['file']
+				file_path = file['file']
+				return file_path
 			else:
 				return None
 
 	def push_to_csv(self, csv_file, data):
-		""" """
+		'''
+		Push data in dictionary form to csv file.
+			Parameters
+			----------
+				csv_file : str
+					path to csv file
+				data : <class dict>
+					dictionary with key and values to be transfered to csv file
+		'''
 		fieldnames = [label for label, paremeter in data.items()]
 
 		if not os.path.isfile(csv_file):
@@ -129,7 +215,7 @@ if __name__ == '__main__':
 
 	######################################################### Sensor Test code
 	env_sensor = monitors.BME680()
-	
+
 	env_tracker = csv_handler(base_dir ='log/', filename='BME680')
 
 	env_sensor.start()
