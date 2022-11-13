@@ -4,15 +4,6 @@ from rpi_control_center import rpi_usb
 
 str_format = '%Y%m%d%H%M%S'
 
-def find_ts_path(ts, data_files):
-
-	for file in data_files:
-		if ts in file['file']:
-			return file['file']
-		else:
-			return None
-
-
 class csv_handler():
 	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling_size = 5000000):
 
@@ -52,10 +43,6 @@ class csv_handler():
 		'''
 		data_file_paths = [self.base_dir+file for file in os.listdir(self.base_dir) if os.path.isfile(self.base_dir+file) and self.filename in file and '.csv' in file]
 
-		# if not data_file_paths:
-		#     ts = datetime.datetime.now().strftime(str_format)
-		#     data_file_paths = [f'{self.base_dir}{ts}_{self.filename}.csv']
-
 		data_files = []
 		total_size = 0
 
@@ -79,23 +66,14 @@ class csv_handler():
 
 		active_files = [file for file in data_files if file['status'] == 'active']
 
-
 		if active_files:
 
 			ts = max([datetime.datetime.strptime(file['file'].split('_')[0].split('/')[-1], str_format) for file in active_files]).strftime(str_format)
 
-			# max([int(file['file'].split('_')[0].split('/')[-1]) for file in self.data_files if file['status'] == 'active'])
-			# self.writing_to = max([int(file['file'].split('_')[0].split('/')[-1]) for file in self.data_files if file['status'] == 'active'])
-
-			self.writing_to = find_ts_path(ts, active_files)
+			self.writing_to = self.find_ts_path(ts, active_files)
 
 		elif not active_files:
 			self.writing_to = None
-
-			# ts = datetime.datetime.now().strftime(str_format)
-			# self.writing_to = f'{self.base_dir}{ts}_{self.filename}.csv'
-			# self.data_files.append(self.writing_to)
-
 
 	def purge_data_files(self, all_files = False):
 		''''''
@@ -114,6 +92,14 @@ class csv_handler():
 					pass
 
 		self.total_size = sum([file['size'] for file in self.data_files])
+
+	def find_ts_path(self, ts, data_files):
+
+		for file in data_files:
+			if ts in file['file']:
+				return file['file']
+			else:
+				return None
 
 	def push_to_csv(self, csv_file, data):
 		""" """
