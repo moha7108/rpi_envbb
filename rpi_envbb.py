@@ -145,6 +145,8 @@ if __name__ == '__main__':
 
 	lol_csv = csv_handler()
 
+	lol_csv(test_data)
+
 	print(lol_csv.data_files)
 	print(lol_csv.writing_to)
 	print(lol_csv.total_size)
