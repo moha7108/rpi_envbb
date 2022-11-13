@@ -42,6 +42,7 @@ class csv_handler():
 	push_to_csv(self, csv_file, data):
 		Push data in dictionary form to csv file.
 	"""
+
 	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling_size = 5000000):
 		'''
 		constructs all necessary attributes for the csv_handler object.
@@ -189,7 +190,6 @@ class csv_handler():
 			with open(csv_file, 'a', newline='') as file:
 				writer = csv.DictWriter(file, fieldnames =fieldnames)
 				writer.writerow(data)
-
 
 if __name__ == '__main__':
 
