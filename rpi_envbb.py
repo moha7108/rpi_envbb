@@ -46,7 +46,7 @@ class csv_handler():
 
 			data_file = {   'file': file,
 							'size': file_stats.st_size,
-							'last_modified': datetime.fromtimestamp(file_stats.st_mtime).strftime(readable_format),
+							'last_modified': datetime.datetime.fromtimestamp(file_stats.st_mtime).strftime(readable_format),
 							'status': 'active' if file_stats.st_size <= self.max_file_size else 'full'
 						  }
 
