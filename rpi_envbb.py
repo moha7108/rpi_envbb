@@ -8,7 +8,7 @@ def find_ts_path(ts, data_files):
 
 	for file in data_files:
 		if ts in file['file']:
-			return file
+			return file['file']
 		else:
 			return None
 
