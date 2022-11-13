@@ -107,39 +107,41 @@ class csv_handler():
 
 if __name__ == '__main__':
 
-	test_data = {'hello': 13, 'poop':'34013'}
+	################################################### CSV Handler test code
+	# test_data = {'hello': 13, 'poop':'34013'}
+	#
+	# test_csv = csv_handler(filename='test_data')
+	#
+	# print(test_csv.data_files)
+	# print(test_csv.writing_to)
+	# print(test_csv.total_size)
+	#
+	# test_csv(test_data)
+	#
+	#
+	# lol_csv = csv_handler()
+	#
+	# lol_csv(test_data)
+	#
+	# print(lol_csv.data_files)
+	# print(lol_csv.writing_to)
+	# print(lol_csv.total_size)
 
-	test_csv = csv_handler(filename='test_data')
-
-	print(test_csv.data_files)
-	print(test_csv.writing_to)
-	print(test_csv.total_size)
-
-	test_csv(test_data)
-
-
-	lol_csv = csv_handler()
-
-	lol_csv(test_data)
-
-	print(lol_csv.data_files)
-	print(lol_csv.writing_to)
-	print(lol_csv.total_size)
-
-	# env_sensor = monitors.BME680()
-	# log_dir = env_sensor.log_file.rsplit('/',1)
-	# log_dir.pop()
+	######################################################### Sensor Test code
+	env_sensor = monitors.BME680()
+	log_dir = env_sensor.log_file.rsplit('/',1)
+	log_dir.pop()
 	# csv_file = f'{log_dir[0]}/envbb_data.csv'
-	#
-	#
-	# env_sensor.start()
-	# time.sleep(5)
-	#
-	# try:
-	# 	while True:
-	# 		# print(env_sensor.sensor_readings)
-	# 		push_to_csv(csv_file, env_sensor.sensor_readings)
-	# 		time.sleep(1)
-	#
-	# except:
-	# 	env_sensor.stop()
+
+	env_tracker = csv_handler(base_dir ='log/', filename='BME680')
+
+	env_sensor.start()
+	time.sleep(5)
+
+	try:
+		while True:
+			# print(env_sensor.sensor_readings)
+			env_tracker(env_sensor.sensor_readings)
+
+	except:
+		env_sensor.stop()
