@@ -4,6 +4,15 @@ from rpi_control_center import rpi_usb
 
 str_format = '%Y%m%d%H%M%S'
 
+def find_ts_path(ts, data_files):
+
+	for file in data_files:
+		if ts in file['file']:
+			return file
+		else:
+			return None
+
+
 class csv_handler():
 	def __init__(self, base_dir ='log/', filename='pi_data', max_file_size =89000, max_handling_size = 5000000):
 
@@ -72,7 +81,14 @@ class csv_handler():
 
 
 		if active_files:
-			self.writing_to = max([int(file['file'].split('_')[0].split('/')[-1]) for file in self.data_files if file['status'] == 'active'])
+
+			ts = max([datetime.strptime(file['file'].split('_')[0].split('/')[-1], str_format) for file in active_files]).strftime(str_format)
+
+			# max([int(file['file'].split('_')[0].split('/')[-1]) for file in self.data_files if file['status'] == 'active'])
+			# self.writing_to = max([int(file['file'].split('_')[0].split('/')[-1]) for file in self.data_files if file['status'] == 'active'])
+
+			self.writing_to = find_ts_path(ts, active_files)
+
 		elif not active_files:
 			self.writing_to = None
 
@@ -115,7 +131,6 @@ class csv_handler():
 
 
 if __name__ == '__main__':
-
 
 	test_data = {'hello': 13, 'poop':'34013'}
 
