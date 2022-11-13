@@ -142,6 +142,7 @@ if __name__ == '__main__':
 		while True:
 			# print(env_sensor.sensor_readings)
 			env_tracker(env_sensor.sensor_readings)
+			time.sleep(1)
 
 	except:
 		env_sensor.stop()
