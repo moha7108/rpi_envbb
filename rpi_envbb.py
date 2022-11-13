@@ -129,10 +129,7 @@ if __name__ == '__main__':
 
 	######################################################### Sensor Test code
 	env_sensor = monitors.BME680()
-	log_dir = env_sensor.log_file.rsplit('/',1)
-	log_dir.pop()
-	# csv_file = f'{log_dir[0]}/envbb_data.csv'
-
+	
 	env_tracker = csv_handler(base_dir ='log/', filename='BME680')
 
 	env_sensor.start()
