@@ -82,7 +82,7 @@ class csv_handler():
 
 		if active_files:
 
-			ts = max([datetime.strptime(file['file'].split('_')[0].split('/')[-1], str_format) for file in active_files]).strftime(str_format)
+			ts = max([datetime.datetime.strptime(file['file'].split('_')[0].split('/')[-1], str_format) for file in active_files]).strftime(str_format)
 
 			# max([int(file['file'].split('_')[0].split('/')[-1]) for file in self.data_files if file['status'] == 'active'])
 			# self.writing_to = max([int(file['file'].split('_')[0].split('/')[-1]) for file in self.data_files if file['status'] == 'active'])
